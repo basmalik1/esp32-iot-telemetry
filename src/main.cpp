@@ -1,8 +1,9 @@
 #include <Arduino.h>
 
 // Pin map per the v1.0 spec.
-// The spec's on-board LED on GPIO2 does not exist on this board; the DevKitC-1
-// carries an addressable RGB LED on GPIO48 (v1.0) or GPIO38 (v1.1). See README.
+// The spec's on-board LED on GPIO2 does not exist on this board. The on-board
+// LED is a WS2812 on GPIO48 and needs neopixelWrite(), not digitalWrite().
+constexpr uint8_t PIN_LED_ONBOARD_RGB = 48;
 constexpr uint8_t PIN_LED_EXTERNAL = 4;
 constexpr uint8_t PIN_BUTTON = 13;
 
