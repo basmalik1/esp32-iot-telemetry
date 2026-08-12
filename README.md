@@ -24,10 +24,6 @@ Because the module has Octal PSRAM (the `R8` suffix), **GPIO35, GPIO36 and GPIO3
 
 ### LED Options
 
-The spec assigns the on-board LED to GPIO2, which is the ESP32-WROOM-32 (classic DevKit v1) convention. It does not apply to this hardware.
-
-**ESP32-S3-WROOM-1 is a module, not a dev board.** Its datasheet lists the only integrated components as a 40 MHz crystal and Quad SPI flash — there is no user LED on the module at all. Any on-board LED belongs to the carrier board the module is soldered to.
-
 The carrier board has four LEDs in a row. Only the first is user-controllable:
 
 | LED       | Pin    | Controllable |
