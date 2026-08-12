@@ -16,9 +16,9 @@ Hosyond ESP32-S3 dev board (ESP32-S3-DevKitC-1 clone, dual Type-C) carrying an *
 
 | Pin      | Direction | Function       | Notes                                  |
 | -------- | --------- | -------------- | -------------------------------------- |
-| GPIO48   | Output    | On-board RGB   | WS2812 addressable, not `digitalWrite` |
 | GPIO4    | Output    | External LED   | 220 Ω series resistor                  |
 | GPIO13   | Input     | Push button    | `INPUT_PULLUP`, debounced 20–50 ms     |
+| GPIO48   | Output    | On-board RGB   | WS2812 addressable, not `digitalWrite` |
 
 Because the module has Octal PSRAM (the `R8` suffix), **GPIO35, GPIO36 and GPIO37 are consumed by the PSRAM interface** and must not be used. GPIO4, GPIO13 and GPIO48 are all unaffected.
 
