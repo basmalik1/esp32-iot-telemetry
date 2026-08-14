@@ -45,12 +45,14 @@ Sources: [ESP32-S3-DevKitC-1 v1.1 user guide](https://docs.espressif.com/project
 
 ## Building
 
-PlatformIO is not installed on this machine. Install the [VS Code extension](https://platformio.org/install/ide?install=vscode) or the Core CLI first.
+PlatformIO Core 6.1.19 is installed at `~/.platformio/penv/Scripts/pio.exe` but is not on `PATH`, so a bare `pio` fails from an ordinary shell. Use the full path, or run these from VS Code's PlatformIO terminal where `pio` resolves.
 
 ```sh
-pio run              # build
-pio run -t upload    # flash
-pio device monitor   # serial, 115200 baud
+~/.platformio/penv/Scripts/pio.exe run              # build
+~/.platformio/penv/Scripts/pio.exe run -t upload    # flash
+~/.platformio/penv/Scripts/pio.exe device monitor   # serial, 115200 baud
 ```
+
+`Serial` is routed to the **UART** Type-C port (CH343 bridge, `COM3` on this machine), not the native USB port — see the `ARDUINO_USB_CDC_ON_BOOT` and `monitor_port` settings in `platformio.ini`.
 
 For v3.0, copy `include/secrets.h.example` to `include/secrets.h` and fill in your WiFi credentials. That file is gitignored.

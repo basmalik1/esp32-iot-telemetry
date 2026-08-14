@@ -1,3 +1,4 @@
+.claud/
 .pio/
 .vscode/
 include/secrets.h
