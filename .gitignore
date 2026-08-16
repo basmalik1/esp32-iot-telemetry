@@ -3,3 +3,7 @@
 .vscode/
 .DS_Store
 ~$*
+
+# WiFi credentials for v3.0. The .example file is committed as a template;
+# the real secrets.h never is.
+include/secrets.h

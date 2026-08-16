@@ -41,6 +41,27 @@ Being addressable, the RGB LED needs a WS2812 driver — Arduino-ESP32's built-i
 
 Sources: [ESP32-S3-DevKitC-1 v1.1 user guide](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide_v1.1.html), [ESP32-S3-WROOM-1 datasheet](https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf), [YD-ESP32-S3 board reference](https://github.com/profharris/YD-ESP32-S3_ESP32-S3-WROOM-1_Dev)
 
+## Configuration
+
+v3.0 connects to WiFi, and the credentials are deliberately not in this repo. **If you cloned this, you must create `include/secrets.h` before the project will build.**
+
+1. Copy the committed template:
+
+   ```sh
+   cp include/secrets.h.example include/secrets.h
+   ```
+
+2. Edit `include/secrets.h` with your own network:
+
+   ```c
+   #define WIFI_SSID     "your-network-name"
+   #define WIFI_PASSWORD "your-password"
+   ```
+
+`include/secrets.h` is gitignored and must never be committed; `include/secrets.h.example` is the template that is. Leaving `secrets.h` out breaks the build at `#include "secrets.h"` — that is intentional, so a missing configuration surfaces as a compile error rather than a board that silently fails to join the network.
+
+**The ESP32-S3 has a 2.4 GHz radio only.** If your router publishes 2.4 GHz and 5 GHz under separate names, use the 2.4 GHz SSID. SSIDs are case-sensitive.
+
 ## Building
 
 PlatformIO Core 6.1.19 is installed at `~/.platformio/penv/Scripts/pio.exe` but is not on `PATH`, so a bare `pio` fails from an ordinary shell. Use the full path, or run these from VS Code's PlatformIO terminal where `pio` resolves.
@@ -52,5 +73,3 @@ PlatformIO Core 6.1.19 is installed at `~/.platformio/penv/Scripts/pio.exe` but 
 ```
 
 `Serial` is routed to the **UART** Type-C port (CH343 bridge, `COM3` on this machine), not the native USB port — see the `ARDUINO_USB_CDC_ON_BOOT` and `monitor_port` settings in `platformio.ini`.
-
-For v3.0, copy `include/secrets.h.example` to `include/secrets.h` and fill in your WiFi credentials. That file is gitignored.
