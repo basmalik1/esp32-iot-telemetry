@@ -39,8 +39,6 @@ Being addressable, the RGB LED needs a WS2812 driver — Arduino-ESP32's built-i
 
 **To verify on first flash:** some clones ship with the RGB LED's solder jumper open. If GPIO48 does nothing, inspect the pad near the LED before assuming a software fault.
 
-REQ-1's on-board LED output therefore needs a decision before v1.0 can pass: either retarget it to GPIO48 and accept the WS2812 dependency, or drop the on-board LED from REQ-1 and verify against the external LED on GPIO4 alone.
-
 Sources: [ESP32-S3-DevKitC-1 v1.1 user guide](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide_v1.1.html), [ESP32-S3-WROOM-1 datasheet](https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf), [YD-ESP32-S3 board reference](https://github.com/profharris/YD-ESP32-S3_ESP32-S3-WROOM-1_Dev)
 
 ## Building
