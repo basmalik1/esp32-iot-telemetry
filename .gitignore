@@ -1,6 +1,6 @@
 .claude/
 .pio/
 .vscode/
-include/secrets.h
+*.fzz
 .DS_Store
 ~$*
