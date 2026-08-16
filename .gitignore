@@ -1,6 +1,5 @@
 .claude/
 .pio/
 .vscode/
-*.fzz
 .DS_Store
 ~$*
