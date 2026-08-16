@@ -3,6 +3,7 @@
 // Define Pins
 constexpr uint8_t PIN_LED_EXTERNAL = 4; // GPIO4 drives the external LED through its 220 ohm series resistor.
 constexpr uint8_t PIN_ONBOARD_RGB = 48; // GPIO48 drives the on-board addressable RGB LED.
+constexpr uint8_t PIN_BUTTON = 13; // GPIO13 is the button input.
 
 // Define LED Brightness
 constexpr uint8_t ONBOARD_LEVEL = 32; // The per-channel value used for "on" below: 32 out of a possible 255, i.e. about 12% duty. Raising this makes the LED brighter and hungrier.
@@ -43,14 +44,14 @@ void toggleLed() {
 }
 
 bool readButton() {
-  static bool lastStable = HIGH;
-  static uint32_t lastChange = 0;
-  // TODO: Read through the rest of this to verify
-  bool now = digitalRead(PIN_BUTTON);
-  if (now != lastStable && millis() - lastChange >= DEBOUNCE_MS) {
-    lastChange = millis();
-    lastStable = now;
-    return (now == LOW);                    // fire on press, not release
+  static bool lastStable = HIGH; // The last stable state of the button (HIGH means not pressed, LOW means pressed)
+  static uint32_t lastChange = 0; // The last time the button state changed
+
+  bool now = digitalRead(PIN_BUTTON); // Current raw input from the button
+  if ((now != lastStable) && (millis() - lastChange >= DEBOUNCE_MS)) { // If the button state has changed and the debounce interval has passed
+    lastChange = millis(); // Update the last change time
+    lastStable = now; // Update the last stable state
+    return (now == LOW); // fire on press, not release
   }
   return false;
 }
@@ -63,14 +64,14 @@ void setup() {
 
   pinMode(PIN_LED_EXTERNAL, OUTPUT);
   pinMode(PIN_ONBOARD_RGB, OUTPUT);
+  pinMode(PIN_BUTTON, INPUT_PULLUP);
 
   Serial.println();
   Serial.println("Hello, world!");
 }
 
 void loop() {
-  ledOn();
-  delay(200);
-  ledOff();
-  delay(200);
+  if (readButton()) {
+    toggleLed();
+  }
 }
