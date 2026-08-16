@@ -7,6 +7,9 @@ constexpr uint8_t PIN_ONBOARD_RGB = 48; // GPIO48 drives the on-board addressabl
 // Define LED Brightness
 constexpr uint8_t ONBOARD_LEVEL = 32; // The per-channel value used for "on" below: 32 out of a possible 255, i.e. about 12% duty. Raising this makes the LED brighter and hungrier.
 
+// Debounce interval
+constexpr uint8_t DEBOUNCE_MS = 20; // Keep around 20-50ms
+
 // Human readable color structure
 struct Color {
   const char *name;
@@ -37,6 +40,19 @@ void toggleLed() {
   } else {
     ledOn();
   }
+}
+
+bool readButton() {
+  static bool lastStable = HIGH;
+  static uint32_t lastChange = 0;
+  // TODO: Read through the rest of this to verify
+  bool now = digitalRead(PIN_BUTTON);
+  if (now != lastStable && millis() - lastChange >= DEBOUNCE_MS) {
+    lastChange = millis();
+    lastStable = now;
+    return (now == LOW);                    // fire on press, not release
+  }
+  return false;
 }
 
 void setup() {
