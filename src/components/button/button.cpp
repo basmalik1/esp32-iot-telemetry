@@ -26,7 +26,7 @@ portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
 // unsafe here. Counting and returning keeps it to a handful of instructions.
 void IRAM_ATTR onPress() {
   uint32_t now = millis();
-  if (now - lastIsrMs < DEBOUNCE_MS) {
+  if (!buttonDebounceAccepts(now, lastIsrMs, DEBOUNCE_MS)) {
     return; // contact bounce
   }
   lastIsrMs = now; // only the ISR touches this, so it needs no lock

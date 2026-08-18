@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include "components/button/debounce.h" // buttonDebounceAccepts()
+
 // Interrupt-driven, debounced push button on GPIO13.
 void buttonInit();
 

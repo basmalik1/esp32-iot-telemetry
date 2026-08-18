@@ -36,17 +36,19 @@ REQ-1 was deliberately retired at v2.0: the timer was superseded by the button a
 
 | ID | Level | What it checks | Status |
 | --- | --- | --- | --- |
-| TC-1.1 | Unit | LED turns on, turns off, and toggles | Verified manually |
+| TC-1.1 | Unit | LED turns on, turns off, and toggles | Automated — `pio test -e target` |
 | TC-1.2 | Integration | Measured current draw on GPIO4 is within spec | **Not measured** |
 | TC-1.3 | System | Stable across 50+ power cycles | **Not run** |
-| TC-2.1 | Unit | Debounce reports one clean press, no false triggers | Verified manually |
-| TC-2.2 | Integration | A physical press toggles the real LED | Verified manually |
-| TC-2.3 | System | Repeated inputs produce repeated outputs | Verified manually |
-| TC-3.1 | Unit | HTTP endpoints are valid and return the expected payloads | Verified with `curl` |
-| TC-3.2 | Integration | HTTP requests reach the LED functions | Verified with `curl` |
-| TC-3.3 | System | No request is dropped when both inputs contend | Verified — see below |
+| TC-2.1 | Unit | Debounce reports one clean press, no false triggers | Automated — `pio test -e native` and `-e target` |
+| TC-2.2 | Integration | A physical press toggles the real LED | Manual |
+| TC-2.3 | System | Repeated inputs produce repeated outputs | Manual |
+| TC-3.1 | Unit | HTTP endpoints are valid and return the expected payloads | Automated — `pio test -e native` and `system_test.py` |
+| TC-3.2 | Integration | HTTP requests reach the LED functions | Automated — `system_test.py` |
+| TC-3.3 | System | No request is dropped when both inputs contend | Automated — `system_test.py --serial` |
 
-**None of these are automated yet.** Building them into PlatformIO's Unity runner is outstanding work.
+See [testing.md](testing.md) for how to run each tier. Current totals: 13 host tests, 9 on-target tests, 16 system checks.
+
+TC-2.2, TC-2.3 and the contention half of TC-3.3 need a finger on the button, so they cannot be fully unattended — the harness does the counting, a human supplies the presses.
 
 ### TC-3.3 result
 

@@ -4,6 +4,7 @@
 #include <WebServer.h>
 
 #include "components/wifi/network_manager/network_manager.h"
+#include "components/wifi/web_server/status_json.h"
 
 namespace {
 
@@ -13,13 +14,9 @@ LedControl led{};
 // Every endpoint answers with the resulting state, so a caller never needs a
 // second request to find out what happened.
 void sendStatus() {
-  // snprintf into a fixed buffer rather than an Arduino String: no heap
-  // allocation in a handler that runs thousands of times.
   char body[160];
-  snprintf(body, sizeof(body),
-           "{\"led\":%s,\"toggles\":%lu,\"rssi\":%d,\"uptime_ms\":%lu}\n",
-           led.isOn() ? "true" : "false", led.toggles(), networkRssi(),
-           millis());
+  statusJsonFormat(body, sizeof(body), led.isOn(), led.toggles(), networkRssi(),
+                   millis());
   server.send(200, "application/json", body);
 }
 
