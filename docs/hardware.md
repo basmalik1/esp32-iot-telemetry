@@ -18,6 +18,19 @@ These carry a `v2` suffix because that iteration produced them, and they are sti
 
 **GPIO35, GPIO36 and GPIO37 are unavailable.** The `R8` suffix means octal PSRAM, and the PSRAM interface consumes those three pins. The pins above are unaffected, but any expansion has to route around them.
 
+## Which LEDs you can actually drive
+
+The carrier board has four LEDs in a row, and only the first answers to software:
+
+| LED | Pin | Controllable |
+| --- | --- | --- |
+| WS2812 RGB | GPIO48 | Yes |
+| Power (red) | — | No, hardwired to 3V3 |
+| TX (green) | — | No, driven by the USB-UART bridge |
+| RX (blue) | — | No, driven by the USB-UART bridge |
+
+Espressif's own DevKitC-1 moved this LED to GPIO38 on board revision v1.1, while the initial revision used GPIO48. This clone follows the GPIO48 layout — worth checking before assuming a wiring fault on a different board.
+
 ## The on-board LED is not a plain LED
 
 GPIO48 drives a **WS2812**, which takes a timed one-wire bitstream rather than a voltage level. `digitalWrite(48, HIGH)` does nothing. Use the Arduino core's built-in driver:
@@ -59,3 +72,9 @@ board_upload.maximum_size = 16777216
 Flash size **must** be set through `board_upload.*`. Setting `board_build.flash_size` instead is silently ignored, leaving 8 MB in the bootloader image header. A 16 MB partition table against an 8 MB header makes the second-stage bootloader reject the table and reset — the board then boot-loops roughly 34 times a second, before printing a single line, so the serial monitor stays blank and gives you nothing to work with.
 
 Confirm the settings took by checking the boot banner: flash should report 16 MB and PSRAM a non-zero size.
+
+## References
+
+- [ESP32-S3-DevKitC-1 v1.1 user guide](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide_v1.1.html)
+- [ESP32-S3-WROOM-1 datasheet](https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf)
+- [YD-ESP32-S3 board reference](https://github.com/profharris/YD-ESP32-S3_ESP32-S3-WROOM-1_Dev) — a closely related clone

@@ -1,75 +1,73 @@
-# ESP32 Blinking LED
+# ESP32 IoT Telemetry
 
-An LED blink built out as a V-Model exercise: each iteration runs a full requirements → design → implementation → test cycle, with regression tests carried forward.
+An ESP32-S3 that drives an LED two different ways: from a physical button, or over HTTP from anything on the network.
 
-| Version | Input  | Requirements                                     |
-| ------- | ------ | ------------------------------------------------ |
-| v1.0    | Timer  | REQ-1 blink at 200 ms; REQ-2 keep GPIO current in spec |
-| v2.0    | Button | REQ-3 button press toggles the LED                |
-| v3.0    | WiFi   | REQ-4 HTTP request toggles the LED                |
+The LED is not the interesting part. The interesting part is that a hardware interrupt and a web server share one piece of state without ever losing an input — and there is a test that proves it, by driving both at once for twenty seconds and checking the arithmetic.
 
-Full specification, traceability matrix and test plans are in [`docs/`](docs/).
+![Breadboard](docs/img/breadboard-v2.png)
+
+## Inputs
+
+| Input | How it works |
+| --- | --- |
+| Button | GPIO interrupt with a 50 ms debounce, counted so rapid presses are never collapsed |
+| HTTP | `GET /on`, `/off`, `/toggle`, `/status` on port 80 |
+
+Every endpoint replies with the resulting state, so a caller never needs a second request:
+
+```console
+$ curl http://<board-ip>/toggle
+{"led":true,"toggles":42,"rssi":-31,"uptime_ms":65138}
+```
+
+There is also a plain page of links at `/`, so the board can be driven from a phone browser with no tooling.
 
 ## Hardware
 
-Hosyond ESP32-S3 dev board (ESP32-S3-DevKitC-1 clone, dual Type-C) carrying an **ESP32-S3-WROOM-1-N16R8** module — 16 MB Quad SPI flash, 8 MB Octal SPI PSRAM. Breadboard, USB powered.
+Hosyond ESP32-S3 dev board — a DevKitC-1 clone carrying an ESP32-S3-WROOM-1-N16R8 module. Breadboard, USB powered.
 
-| Pin      | Direction | Function       | Notes                                  |
-| -------- | --------- | -------------- | -------------------------------------- |
-| GPIO4    | Output    | External LED   | 220 Ω series resistor                  |
-| GPIO13   | Input     | Push button    | `INPUT_PULLUP`, debounced 20–50 ms     |
-| GPIO48   | Output    | On-board RGB   | WS2812 addressable, not `digitalWrite` |
+| Pin | Direction | Connected to |
+| --- | --- | --- |
+| GPIO4 | Output | External LED, through a 220 Ω series resistor |
+| GPIO13 | Input | Push button to ground, using the internal pull-up |
+| GPIO48 | Output | On-board WS2812 RGB LED |
 
-Because the module has Octal PSRAM (the `R8` suffix), **GPIO35, GPIO36 and GPIO37 are consumed by the PSRAM interface** and must not be used. GPIO4, GPIO13 and GPIO48 are all unaffected.
+Board quirks worth knowing before you wire anything — the unusable PSRAM pins, which USB port carries `Serial`, and the flash-size setting that boot-loops the board if you get it wrong — are in [docs/hardware.md](docs/hardware.md).
 
-### LED Options
+## Getting started
 
-The carrier board has four LEDs in a row. Only the first is user-controllable:
-
-| LED       | Pin    | Controllable |
-| --------- | ------ | ------------ |
-| WS2812 RGB | GPIO48 | Yes          |
-| Power (red) | —     | No, hardwired |
-| TX (green) | —      | No, driven by the USB-UART bridge |
-| RX (blue)  | —      | No, driven by the USB-UART bridge |
-
-Espressif's own DevKitC-1 uses GPIO48 on the initial revision and GPIO38 on v1.1; this clone follows the GPIO48 layout.
-
-Being addressable, the RGB LED needs a WS2812 driver — Arduino-ESP32's built-in `neopixelWrite(RGB_BUILTIN, r, g, b)`, or `Adafruit_NeoPixel` / `FastLED` — not `digitalWrite()`.
-
-**To verify on first flash:** some clones ship with the RGB LED's solder jumper open. If GPIO48 does nothing, inspect the pad near the LED before assuming a software fault.
-
-Sources: [ESP32-S3-DevKitC-1 v1.1 user guide](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide_v1.1.html), [ESP32-S3-WROOM-1 datasheet](https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf), [YD-ESP32-S3 board reference](https://github.com/profharris/YD-ESP32-S3_ESP32-S3-WROOM-1_Dev)
-
-## Configuration
-
-v3.0 connects to WiFi, and the credentials are deliberately not in this repo. **If you cloned this, you must create `include/secrets.h` before the project will build.**
-
-1. Copy the committed template:
-
-   ```sh
-   cp include/secrets.h.example include/secrets.h
-   ```
-
-2. Edit `include/secrets.h` with your own network:
-
-   ```c
-   #define WIFI_SSID     "your-network-name"
-   #define WIFI_PASSWORD "your-password"
-   ```
-
-`include/secrets.h` is gitignored and must never be committed; `include/secrets.h.example` is the template that is. Leaving `secrets.h` out breaks the build at `#include "secrets.h"` — that is intentional, so a missing configuration surfaces as a compile error rather than a board that silently fails to join the network.
-
-**The ESP32-S3 has a 2.4 GHz radio only.** If your router publishes 2.4 GHz and 5 GHz under separate names, use the 2.4 GHz SSID. SSIDs are case-sensitive.
-
-## Building
-
-PlatformIO Core 6.1.19 is installed at `~/.platformio/penv/Scripts/pio.exe` but is not on `PATH`, so a bare `pio` fails from an ordinary shell. Use the full path, or run these from VS Code's PlatformIO terminal where `pio` resolves.
+Copy `include/secrets.h.example` to `include/secrets.h` and fill in your WiFi credentials; it is gitignored — **note:** the ESP32-S3 only sees 2.4 GHz networks.
 
 ```sh
-~/.platformio/penv/Scripts/pio.exe run              # build
-~/.platformio/penv/Scripts/pio.exe run -t upload    # flash
-~/.platformio/penv/Scripts/pio.exe device monitor   # serial, 115200 baud
+pio run              # build
+pio run -t upload    # flash
+pio device monitor   # serial, 115200 baud
 ```
 
-The board has two USB-C ports and `Serial` comes out the **UART** one, not the native USB port — see [docs/hardware.md](docs/hardware.md) if nothing appears in the monitor.
+If `pio` is not on your `PATH`, run these from the PlatformIO terminal in VS Code. The board's IP is printed on boot.
+
+## Tests
+
+```sh
+pio test -e native   # 13 tests, no hardware needed
+pio test -e target   # 9 tests, on the board
+python tools/system_test.py --host <board-ip>
+```
+
+Three tiers, split by what each can prove — see [docs/testing.md](docs/testing.md). The host tier is what makes the `millis()` rollover testable at all; reaching it on real hardware would take 49.7 days of uptime.
+
+## Structure
+
+```
+src/components/
+  led/        button/
+  wifi/network_manager/  wifi/web_server/
+```
+
+Components never reach into each other — `main.cpp` is the only file that knows about more than one. The web server is handed a struct of function pointers rather than including the LED module, so it depends on no concrete output and can be tested against a fake. [docs/architecture.md](docs/architecture.md) covers the reasoning, including the interrupt-vs-loop concurrency.
+
+## Documentation
+
+[docs/](docs/) — [hardware](docs/hardware.md) · [architecture](docs/architecture.md) · [process](docs/process.md) · [testing](docs/testing.md) · [module reference](docs/reference/)
+
+Built as a V-Model exercise: every requirement is traced to the code that satisfies it and the test that proves it, including the cases that are still unproven. That trail is in [docs/process.md](docs/process.md).
