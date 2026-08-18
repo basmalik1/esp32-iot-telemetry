@@ -57,7 +57,7 @@ Covers TC-3.1 (every endpoint answers with the documented shape), TC-3.2 (reques
 The full **TC-3.3** contention test needs a human pressing the button while HTTP traffic runs, so it is opt-in:
 
 ```sh
-python tools/system_test.py --host 10.0.0.101 --serial COM3 --contention 20
+python tools/system_test.py --host <board-ip> --serial <port> --contention 20
 ```
 
 It counts button presses from the board's serial log and HTTP toggles from the responses, then asserts that the two account for the counter exactly:

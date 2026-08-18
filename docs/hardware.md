@@ -39,7 +39,9 @@ The two USB-C connectors are not interchangeable:
 | UART | CH343 bridge | VID `1A86` | `ARDUINO_USB_CDC_ON_BOOT=0` |
 | Native USB | the ESP32-S3 itself | VID `303A` | `ARDUINO_USB_CDC_ON_BOOT=1` |
 
-This project sets `ARDUINO_USB_CDC_ON_BOOT=0`, so **plug into the UART connector**. The build also pins `monitor_port` / `upload_port`, which is machine-specific — delete those lines and let PlatformIO auto-detect if you are working on your own board.
+This project sets `ARDUINO_USB_CDC_ON_BOOT=0`, so **plug into the UART connector**.
+
+No port is pinned in `platformio.ini` — PlatformIO auto-detects the board by USB vendor ID, and correctly ignores unrelated ports such as a legacy `COM1`. If detection ever picks wrong, override per command (`pio run -t upload --upload-port COM5`, `pio device monitor -p COM5`) rather than committing a port name.
 
 The UART route is the more forgiving one: its port persists across resets and uploads, whereas the native USB port re-enumerates every time the chip restarts and drops your monitor with it.
 

@@ -72,4 +72,4 @@ PlatformIO Core 6.1.19 is installed at `~/.platformio/penv/Scripts/pio.exe` but 
 ~/.platformio/penv/Scripts/pio.exe device monitor   # serial, 115200 baud
 ```
 
-`Serial` is routed to the **UART** Type-C port (CH343 bridge, `COM3` on this machine), not the native USB port — see the `ARDUINO_USB_CDC_ON_BOOT` and `monitor_port` settings in `platformio.ini`.
+The board has two USB-C ports and `Serial` comes out the **UART** one, not the native USB port — see [docs/hardware.md](docs/hardware.md) if nothing appears in the monitor.
