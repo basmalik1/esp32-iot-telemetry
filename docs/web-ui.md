@@ -10,7 +10,7 @@ There is no filesystem upload step. The built page is compiled into the firmware
 
 ```
 web/src/**          →  npm run build   →  web/dist/index.html   (one file)
-web/dist/index.html →  embed_web.py    →  src/.../web_ui.cpp     (gzipped bytes)
+web/dist/index.html →  embed_web.py    →  src/.../web_ui.cpp    (gzipped bytes)
 web_ui.cpp          →  pio run         →  firmware
 ```
 
