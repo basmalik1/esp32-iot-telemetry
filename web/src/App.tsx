@@ -1,3 +1,4 @@
+import { Moon, Sun } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { Sparkline } from "@/components/Sparkline"
@@ -5,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getStatus, ledOff, ledOn, ledToggle, type Status } from "@/lib/api"
+import { useTheme } from "@/lib/theme"
 
 const POLL_MS = 1000
 const HISTORY = 60 // one minute of samples
@@ -68,6 +70,7 @@ export default function App() {
   const [busy, setBusy] = useState(false)
   const [rssiHistory, setRssiHistory] = useState<number[]>([])
   const [tempHistory, setTempHistory] = useState<number[]>([])
+  const { theme, toggle: toggleTheme } = useTheme()
 
   // Kept in a ref so the poll loop never restarts when a command lands.
   const inFlight = useRef(false)
@@ -130,9 +133,20 @@ export default function App() {
               ESP32-S3 &middot; live device telemetry
             </p>
           </div>
-          <Badge variant={online ? "default" : "destructive"}>
-            {online ? "online" : "unreachable"}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant={online ? "default" : "destructive"}>
+              {online ? "online" : "unreachable"}
+            </Badge>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            >
+              {theme === "dark" ? <Sun /> : <Moon />}
+            </Button>
+          </div>
         </header>
 
         {error && (

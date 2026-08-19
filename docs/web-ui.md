@@ -1,6 +1,6 @@
 # Web UI
 
-The board serves a React dashboard at `/` showing live telemetry — LED state, toggle count, signal strength, chip temperature, free heap and uptime — with controls for the LED. It polls `/status` once a second and keeps a minute of history for the sparklines.
+The board serves a React dashboard at `/` showing live telemetry — LED state, toggle count, signal strength, chip temperature, free heap and uptime — with controls for the LED. It polls `/status` once a second and keeps a minute of history for the sparklines. Light and dark themes, following the operating system until you choose otherwise.
 
 Built with Vite, React, Tailwind and [shadcn/ui](https://ui.shadcn.com). Source lives in [`web/`](../web).
 
@@ -64,5 +64,7 @@ For the same reason the sparklines are a hand-rolled SVG polyline rather than a 
 **Assets are stored gzipped only.** There is no uncompressed copy, so `Content-Encoding: gzip` is sent unconditionally. Every browser sends `Accept-Encoding: gzip`, so this is invisible in practice — but a bare HTTP client that does not decompress will receive binary. `tools/system_test.py` handles this explicitly.
 
 **Polling is serialised.** The dashboard skips a poll if one is still in flight. The board answers one request at a time, so overlapping polls would queue behind each other and make the UI feel worse rather than better.
+
+**Theme is applied before React mounts.** A small inline script in `index.html` reads the stored preference — or `prefers-color-scheme` if there is none — and sets the class on `<html>` during parse. Waiting for React would mean a white flash on every load for dark-mode users, on a page that takes ~120 ms to arrive. The React hook reads the same key afterwards, so the two never disagree.
 
 **The physical button and the dashboard share state.** Press the button and the toggle count on screen moves within a second — the same counter that [TC-3.3](process.md#tc-33-result) uses to prove no input is ever dropped.

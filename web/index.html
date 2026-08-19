@@ -12,6 +12,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
     <title>esp32-iot-telemetry</title>
+    <script>
+      // Runs before React mounts, so a dark-mode visitor never sees a white
+      // flash while the bundle parses. The app reads the same key afterwards.
+      try {
+        var t = localStorage.getItem("theme")
+        if (t !== "light" && t !== "dark") {
+          t = matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light"
+        }
+        if (t === "dark") document.documentElement.classList.add("dark")
+        document.documentElement.style.colorScheme = t
+      } catch (e) {
+        /* no persisted preference available; the app falls back on its own */
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
