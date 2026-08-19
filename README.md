@@ -68,7 +68,7 @@ If `pio` is not on your `PATH`, run these from the PlatformIO terminal in VS Cod
 ## Tests
 
 ```sh
-pio test -e native   # 13 tests, no hardware needed
+pio test -e native   # 14 tests, no hardware needed
 pio test -e target   # 9 tests, on the board
 python tools/system_test.py --host <board-ip>
 ```
@@ -92,7 +92,7 @@ Components never reach into each other — `main.cpp` is the only file that know
 
 [docs/](docs/) — [hardware](docs/hardware.md) · [architecture](docs/architecture.md) · [process](docs/process.md) · [testing](docs/testing.md) · [module reference](docs/reference/)
 
-Built as a V-Model exercise: every requirement is traced to the code that satisfies it and the test that proves it — including the two acceptance tests that have still never been run. That trail is in [docs/process.md](docs/process.md).
+Built as a V-Model exercise: every requirement is traced to the code that satisfies it and the test that proves it, with every test case in the plan executed. That trail is in [docs/process.md](docs/process.md).
 
 ## Release Notes
 

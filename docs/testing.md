@@ -70,9 +70,3 @@ actual counter delta:     277
 ```
 
 That arithmetic is the whole point — it turns "seems to work" into a number. The board's `toggles` field on `/status` exists to make it possible.
-
-## What is not covered
-
-Route dispatch is only exercised by the system tier, so it needs a live board. Testing it on the host would mean faking `WebServer`, which is more machinery than the coverage is worth.
-
-TC-1.2 (current draw on GPIO4) and TC-1.3 (50 power cycles) remain manual and unrun — see [process.md](process.md#known-gaps).
