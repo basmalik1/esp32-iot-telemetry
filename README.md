@@ -1,6 +1,6 @@
 # ESP32 IoT Telemetry
 
-An ESP32-S3 that drives an LED two different ways: from a physical button, or over HTTP from anything on the network.
+An ESP32-S3 that drives an LED two different ways: from a physical button, or over HTTP from any device on the same network.
 
 The LED is not the interesting part. The interesting part is that a hardware interrupt and a web server share one piece of state without ever losing an input — and there is a test that proves it, by driving both at once for twenty seconds and checking the arithmetic.
 
@@ -71,3 +71,7 @@ Components never reach into each other — `main.cpp` is the only file that know
 [docs/](docs/) — [hardware](docs/hardware.md) · [architecture](docs/architecture.md) · [process](docs/process.md) · [testing](docs/testing.md) · [module reference](docs/reference/)
 
 Built as a V-Model exercise: every requirement is traced to the code that satisfies it and the test that proves it, including the cases that are still unproven. That trail is in [docs/process.md](docs/process.md).
+
+## Release Notes
+
+The version history and artifacts associated with the project can be found at [Releases](https://github.com/basmalik1/esp32-iot-telemetry/releases).
