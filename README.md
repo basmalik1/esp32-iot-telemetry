@@ -2,7 +2,7 @@
 
 An ESP32-S3 that drives an LED two different ways: from a physical button, or over HTTP from any device on the same network.
 
-The LED is not the interesting part. The interesting part is that a hardware interrupt and a web server share one piece of state without ever losing an input — and there is a test that proves it, by driving both at once for twenty seconds and checking the arithmetic.
+The LED is not the interesting part. The interesting part is that a hardware interrupt and a web server share one piece of state without ever losing an input. There is a test case that proves it by driving both at once for twenty seconds and checking the arithmetic.
 
 ![Breadboard](docs/img/breadboard-v2.png)
 
@@ -36,7 +36,7 @@ Board quirks worth knowing before you wire anything — the unusable PSRAM pins,
 
 ## Getting started
 
-Copy `include/secrets.h.example` to `include/secrets.h` and fill in your WiFi credentials; it is gitignored — **note:** the ESP32-S3 only sees 2.4 GHz networks.
+Copy `include/secrets.h.example` to `include/secrets.h` and fill in your WiFi credentials; it is gitignored — **note: the ESP32-S3 only sees 2.4 GHz networks.**
 
 ```sh
 pio run              # build
@@ -70,7 +70,7 @@ Components never reach into each other — `main.cpp` is the only file that know
 
 [docs/](docs/) — [hardware](docs/hardware.md) · [architecture](docs/architecture.md) · [process](docs/process.md) · [testing](docs/testing.md) · [module reference](docs/reference/)
 
-Built as a V-Model exercise: every requirement is traced to the code that satisfies it and the test that proves it, including the cases that are still unproven. That trail is in [docs/process.md](docs/process.md).
+Built as a V-Model exercise: every requirement is traced to the code that satisfies it and the test that proves it. That trail is in [docs/process.md](docs/process.md).
 
 ## Release Notes
 
