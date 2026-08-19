@@ -5,6 +5,7 @@
 
 #include "components/wifi/network_manager/network_manager.h"
 #include "components/wifi/web_server/status_json.h"
+#include "components/wifi/web_server/web_ui.h"
 
 namespace {
 
@@ -14,20 +15,19 @@ LedControl led{};
 // Every endpoint answers with the resulting state, so a caller never needs a
 // second request to find out what happened.
 void sendStatus() {
-  char body[160];
-  statusJsonFormat(body, sizeof(body), led.isOn(), led.toggles(), networkRssi(),
-                   millis());
+  char body[192];
+  StatusFields f{led.isOn(),        led.toggles(),      networkRssi(),
+                 millis(),          ESP.getFreeHeap(),  temperatureRead()};
+  statusJsonFormat(body, sizeof(body), f);
   server.send(200, "application/json", body);
 }
 
-// Plain links, so the board can be driven from a phone browser with no tooling.
+// The dashboard, compiled into the binary and already gzipped. send_P streams
+// it straight out of flash rather than copying 80 kB into RAM first.
 void handleRoot() {
-  static const char page[] =
-      "<!doctype html><meta name=viewport content=\"width=device-width\">"
-      "<h2>esp32-iot-telemetry</h2><p>"
-      "<a href=\"/on\">on</a> | <a href=\"/off\">off</a> | "
-      "<a href=\"/toggle\">toggle</a> | <a href=\"/status\">status</a></p>";
-  server.send(200, "text/html", page);
+  server.sendHeader("Content-Encoding", "gzip");
+  server.send_P(200, "text/html", reinterpret_cast<PGM_P>(WEB_UI_GZ),
+                WEB_UI_GZ_LEN);
 }
 
 void handleOn() {

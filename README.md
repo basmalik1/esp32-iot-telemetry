@@ -13,6 +13,12 @@ The LED is not the interesting part. The interesting part is that a hardware int
 | Button | GPIO interrupt with a 50 ms debounce, counted so rapid presses are never collapsed |
 | HTTP | `GET /on`, `/off`, `/toggle`, `/status` on port 80 |
 
+## Dashboard
+
+Browse to the board's IP and it serves a React dashboard showing live telemetry — signal strength, chip temperature, free heap, uptime and the toggle counter — with LED controls. Press the physical button and the count on screen moves within a second.
+
+The whole page is compiled into the firmware as 80 kB of pre-gzipped bytes and served straight from flash in about 120 ms, so there is no filesystem upload step and no Node toolchain needed to flash it. [docs/web-ui.md](docs/web-ui.md) covers how it is built and why it is that size.
+
 Every endpoint replies with the resulting state, so a caller never needs a second request:
 
 ```console

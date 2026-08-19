@@ -7,3 +7,8 @@
 # WiFi credentials for v3.0. The .example file is committed as a template;
 # the real secrets.h never is.
 include/secrets.h
+
+# Frontend build artifacts. The generated web_ui.cpp under src/ is committed
+# so the firmware builds without Node; these are not.
+web/node_modules/
+web/dist/

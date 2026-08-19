@@ -6,6 +6,7 @@
 | [Architecture](architecture.md) | How the modules fit together and what is allowed to depend on what |
 | [Process](process.md) | Requirements, the traceability matrix, and the test plan |
 | [Testing](testing.md) | The three test tiers and how to run each |
+| [Web UI](web-ui.md) | The dashboard, and how it gets into the firmware |
 | [Reference](reference/) | One page per module — what it exposes and how it behaves |
 
 Superseded material is kept in [deprecated/](deprecated/) rather than deleted. Anything older than that is in the git history.

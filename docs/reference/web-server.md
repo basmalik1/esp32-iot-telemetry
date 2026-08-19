@@ -21,7 +21,7 @@ void webServerPoll();                          // every loop() iteration
 
 | Method | Path | Effect |
 | --- | --- | --- |
-| GET | `/` | Page of links, so the board can be driven from a phone browser |
+| GET | `/` | The telemetry dashboard — see [web-ui.md](../web-ui.md) |
 | GET | `/on` | Turn on |
 | GET | `/off` | Turn off |
 | GET | `/toggle` | Toggle |
@@ -31,8 +31,12 @@ void webServerPoll();                          // every loop() iteration
 Every endpoint — including the three that change state — replies with the resulting state:
 
 ```json
-{"led":true,"toggles":42,"rssi":-31,"uptime_ms":65138}
+{"led":true,"toggles":42,"rssi":-31,"uptime_ms":65138,"free_heap":292260,"temp_c":45.8}
 ```
+
+`temp_c` comes from the ESP32-S3's internal die sensor via `temperatureRead()`. It measures the chip, not the room — expect readings well above ambient.
+
+`/` is served with `server.send_P()` straight from flash, with a `Content-Encoding: gzip` header. The page is stored gzipped and never compressed at runtime, and there is no uncompressed copy, so a client that cannot decompress will receive binary.
 
 So a caller never needs a second request to find out what happened.
 

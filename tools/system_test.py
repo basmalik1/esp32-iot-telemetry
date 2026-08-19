@@ -11,6 +11,7 @@ Exits non-zero if any check fails.
 """
 
 import argparse
+import gzip
 import json
 import sys
 import time
@@ -33,18 +34,36 @@ def check(label, condition, detail=""):
         print("  FAIL  %s %s" % (label, detail))
 
 
+def fetch(host, path):
+    """GET a path, returning (status_code, headers, decoded_body_bytes).
+
+    The dashboard is stored pre-gzipped in flash and served with
+    Content-Encoding: gzip, so any client here has to decompress. urllib does
+    not do it automatically the way requests or a browser would.
+    """
+    url = "http://%s%s" % (host, path)
+    req = urllib.request.Request(url, headers={"Accept-Encoding": "gzip"})
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+            raw = r.read()
+            headers = dict(r.headers)
+            status = r.status
+    except urllib.error.HTTPError as e:
+        raw, headers, status = e.read(), dict(e.headers), e.code
+
+    if headers.get("Content-Encoding") == "gzip":
+        raw = gzip.decompress(raw)
+    return status, headers, raw
+
+
 def get(host, path):
     """GET a path, returning (status_code, parsed_json_or_text)."""
-    url = "http://%s%s" % (host, path)
+    status, _, raw = fetch(host, path)
+    body = raw.decode("utf-8", "replace")
     try:
-        with urllib.request.urlopen(url, timeout=TIMEOUT) as r:
-            body = r.read().decode()
-            try:
-                return r.status, json.loads(body)
-            except json.JSONDecodeError:
-                return r.status, body
-    except urllib.error.HTTPError as e:
-        return e.code, e.read().decode()
+        return status, json.loads(body)
+    except json.JSONDecodeError:
+        return status, body
 
 
 def tc_3_1_endpoints_are_valid(host):
@@ -56,13 +75,24 @@ def tc_3_1_endpoints_are_valid(host):
     check("/status returns JSON", isinstance(body, dict), "(got %r)" % (body,))
 
     if isinstance(body, dict):
-        for field in ("led", "toggles", "rssi", "uptime_ms"):
+        for field in ("led", "toggles", "rssi", "uptime_ms", "free_heap",
+                      "temp_c"):
             check("/status has %s" % field, field in body)
         check("led is a boolean", isinstance(body.get("led"), bool))
         check("toggles is an integer", isinstance(body.get("toggles"), int))
+        # The internal sensor should read somewhere between a cold room and a
+        # very unhappy chip. A wildly out-of-range value means the reading is
+        # not wired up rather than that the board is on fire.
+        temp = body.get("temp_c")
+        check("temp_c is a plausible reading", isinstance(temp, (int, float))
+              and -20 < temp < 125, "(got %r)" % (temp,))
 
-    code, _ = get(host, "/")
+    code, headers, raw = fetch(host, "/")
     check("/ returns 200", code == 200, "(got %s)" % code)
+    check("/ is served gzipped", headers.get("Content-Encoding") == "gzip",
+          "(got %r)" % headers.get("Content-Encoding"))
+    check("/ returns the dashboard", b'<div id="root">' in raw,
+          "(body did not contain the app mount point)")
 
     code, _ = get(host, "/no-such-endpoint")
     check("unknown path returns 404", code == 404, "(got %s)" % code)
