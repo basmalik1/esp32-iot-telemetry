@@ -56,6 +56,8 @@ TC-2.2, TC-2.3 and the contention half of TC-3.3 need a finger on the button, so
 
 Multimeter in series with GPIO4, LED on: **5.55 mA**.
 
+![Multimeter in series with GPIO4 reading 5.55 mA, LED lit](img/project-photo.jpeg)
+
 | | |
 | --- | --- |
 | Measured | 5.55 mA |

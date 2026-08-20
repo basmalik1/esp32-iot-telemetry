@@ -4,7 +4,7 @@ An ESP32-S3 that measures itself and reports die temperature, signal strength, a
 
 The neat part is that **the board is the web server** — no cloud, broker, or companion app. The 80 kB of dashboard is compiled into the firmware and served from flash. Also, **a hardware interrupt and that web server share one piece of state without ever losing an input**, which is validated through a test that drives both at once for twenty seconds and checks the arithmetic.
 
-![Breadboard](docs/img/breadboard-v2.png)
+![ESP32-S3 on a breadboard with the LED lit, a multimeter in series reading 5.55 mA](docs/img/project-photo.jpeg)
 
 ## Telemetry
 
@@ -38,6 +38,11 @@ Every endpoint replies with the full status object, so a caller never needs a se
 ## Dashboard
 
 Browse to the board's IP to see live cards, sparklines for temperature and signal, LED controls, and light/dark themes that follow your system until you pick one. Press the physical button and the count on screen moves within a second.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/ui/ui-dark-mode.png">
+  <img alt="Telemetry dashboard: cards for LED state, signal, chip temperature, free heap, uptime and toggle count, with sparklines and LED controls" src="docs/img/ui/ui-light-mode.png">
+</picture>
 
 The whole page is compiled into the firmware as pre-gzipped bytes and served straight from flash in about 120 ms — no filesystem upload step, and no Node toolchain needed to flash it. [docs/web-ui.md](docs/web-ui.md) covers how it is built and why it is that size.
 
